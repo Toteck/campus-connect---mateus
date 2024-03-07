@@ -49,41 +49,47 @@ test.group('Events', (group) => {
       degree: 'médio técnico',
       name: 'Administração',
     }).create()
-    console.log({ course2 })
-    // const sistemasParaInternet = await ClassFactory.merge({ courseId: course.id }).create()
-    // const administracao = await ClassFactory.merge({ courseId: course2.id }).create()
 
-    // const eventPayload = {
-    //   title:
-    //     'Edital nº 4/2024 - Seleção de Alunas para o Programa Mulheres MIL - Gestor de Microempresas 2024',
-    //   description:
-    //     'Seleção de Alunas para o Curso de Formação Inicial e Continuada (FIC) de GESTOR DE MICROEMPRESA do Programa Mulheres Mil.',
-    //   date: '2024-01-31',
-    //   category: 'edital',
-    //   anexo: [
-    //     'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTQ5MWYyMmUxYjFmMDNmODUyNjk3ZTA2Njc2MDRmY1t8XTAwM19TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
-    //     'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTIyMDlhMDNiY2QwZWMzYzA4OTc2ZGZmMGU1MzE5N1t8XTAwMl9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
-    //     'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQWNhYzEyZGU3ZDhiNzBhOGJhMWY1MzM1YzkzZDRlZVt8XTAwMV9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
-    //   ],
-    //   publisher: userAdm.id,
-    // }
+    const sistemasParaInternet = await ClassFactory.merge({ courseId: course.id }).create()
+    const administracao = await ClassFactory.merge({
+      name: 'Administração 2022 Matutino',
+      year: '2022',
+      period: '1',
+      shift: 'matutino',
+      courseId: course2.id,
+    }).create()
 
-    // // Primeiro cria o evento
-    // const response = await client.post('/events').json(eventPayload).loginAs(userAdm)
-    // response.assertStatus(201)
+    const eventPayload = {
+      title:
+        'Edital nº 4/2024 - Seleção de Alunas para o Programa Mulheres MIL - Gestor de Microempresas 2024',
+      description:
+        'Seleção de Alunas para o Curso de Formação Inicial e Continuada (FIC) de GESTOR DE MICROEMPRESA do Programa Mulheres Mil.',
+      date: '2024-01-31',
+      category: 'edital',
+      anexo: [
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTQ5MWYyMmUxYjFmMDNmODUyNjk3ZTA2Njc2MDRmY1t8XTAwM19TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTIyMDlhMDNiY2QwZWMzYzA4OTc2ZGZmMGU1MzE5N1t8XTAwMl9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQWNhYzEyZGU3ZDhiNzBhOGJhMWY1MzM1YzkzZDRlZVt8XTAwMV9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+      ],
+      publisher: userAdm.id,
+    }
 
-    // // Envia o evento para as turmas
-    // // evento e turmas que eu vou enviar
-    // const eventsToClasses = {
-    //   event_id: response.body().event.id,
-    //   class_id: [sistemasParaInternet.id, administracao.id],
-    // }
-    // const response2 = await client
-    //   .post(`/events/send/${response.body().event.id}`)
-    //   .json(eventsToClasses)
-    //   .loginAs(userAdm)
-    // response2.assertStatus(201)
-    // console.log(response2.body().event)
+    // Primeiro cria o evento
+    const response = await client.post('/events').json(eventPayload).loginAs(userAdm)
+    response.assertStatus(201)
+
+    // Envia o evento para as turmas
+    // evento e turmas que eu vou enviar
+    const eventsToClasses = {
+      event_id: response.body().event.id,
+      class_id: [sistemasParaInternet.id, administracao.id],
+    }
+    const response2 = await client
+      .post(`/events/send/${response.body().event.id}`)
+      .json(eventsToClasses)
+      .loginAs(userAdm)
+    response2.assertStatus(201)
+    console.log(response2.body().event)
   })
 
   test('it should try to create an event with an already existing title', async ({
