@@ -27,20 +27,28 @@ export default class EventsController {
   }
 
   public async sendEvent({ response, request }: HttpContextContract) {
-    const { ['event_id']: eventId, ['class_id']: classIds } =
+    const { ['event_id']: eventsIds, ['class_id']: classIds } =
       await request.validate(SendEventValidator)
 
-    const event = await Event.findOrFail(eventId)
-    for (const classId of classIds) {
-      const classe = await Class.findOrFail(classId)
-      await event.related('classes').attach([classe.id])
-    }
-    // const classe = await Class.findOrFail(classId)
-    // await event.related('classes').attach([classe.id])
-    await event.load('classes')
-    await event.load('publisherUser')
+    //const event = await Event.findOrFail(eventId)
 
-    return response.created({ event })
+    const events: Event[] = [] // Array para armazenar os eventos
+
+    for (const eventId of eventsIds) {
+      // 1) Verifico se o evento existe
+      const event = await Event.findOrFail(eventId)
+      for (const classId of classIds) {
+        // 2) Atribuo o evento as turmas
+        const classe = await Class.findOrFail(classId)
+        await event.related('classes').attach([classe.id])
+      }
+      // Carrego os relacionamentos do evento
+      await event.load('classes')
+      await event.load('publisherUser')
+      events.push(event) // Adiciona o evento ao array de eventos
+    }
+
+    return response.created({ events })
   }
 
   public async update({ request, response }: HttpContextContract) {

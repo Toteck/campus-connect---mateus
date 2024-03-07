@@ -5,7 +5,7 @@ export default class SendEventValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    event_id: schema.number(),
+    event_id: schema.array().members(schema.number()),
     class_id: schema.array().members(schema.number()),
   })
 
