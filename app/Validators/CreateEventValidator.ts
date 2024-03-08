@@ -7,8 +7,8 @@ export default class CreateEventValidator {
   public schema = schema.create({
     title: schema.string({ trim: true }),
     description: schema.string({ trim: true }),
-    date: schema.date({}),
     category: schema.enum(['notícia', 'edital', 'evento', 'reunião'] as const),
+    status: schema.enum.optional(['andamento', 'concluído', 'suspenso'] as const),
     thumbnail: schema.string.optional(),
     anexo: schema.array().members(schema.string()),
     publisher: schema.number(),

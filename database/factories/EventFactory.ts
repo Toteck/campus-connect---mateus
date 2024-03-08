@@ -10,14 +10,25 @@ const categories: ('notícia' | 'edital' | 'evento' | 'reunião')[] = [
   'reunião',
 ]
 
+const status: ('andamento' | 'concluído' | 'suspenso' | undefined)[] = [
+  'andamento',
+  'concluído',
+  'suspenso',
+  undefined,
+]
+
 export default Factory.define(Event, ({ faker }) => {
   return {
     title: faker.lorem.lines(1),
     description: faker.lorem.sentence(),
-    date: DateTime.fromJSDate(faker.date.soon()),
     // Aqui nós garantimos que o arrayElement retorne especificamente um dos tipos aceitos,
     // o que deve eliminar o erro do TypeScript
     category: faker.helpers.arrayElement(categories) as 'notícia' | 'edital' | 'evento' | 'reunião',
+    status: faker.helpers.arrayElement(status) as
+      | 'andamento'
+      | 'concluído'
+      | 'suspenso'
+      | undefined,
     thumbnail: faker.internet.url(),
     anexo: [faker.internet.url().toString()],
   }

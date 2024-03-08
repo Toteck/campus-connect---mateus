@@ -26,7 +26,7 @@ Route.group(() => {
 
   // Events
   Route.post('/events', 'EventsController.store')
-  Route.post('/events/send/:id', 'EventsController.sendEvent')
+  Route.post('/events/send/:id', 'EventsController.sendEventToClass')
   Route.patch('/events/:id', 'EventsController.update')
   //Route.get('/events', 'EventsController.index')
   Route.delete('/events/:id', 'EventsController.destroy')

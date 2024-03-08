@@ -17,6 +17,10 @@ export default class EventsController {
       throw new BadRequestException('Title is already being used by another event', 409)
     }
 
+    if (eventPayload.category === 'edital' && eventPayload.status === undefined) {
+      throw new BadRequestException('Notice-type events must have a status', 422)
+    }
+
     const event = await Event.create(eventPayload)
 
     // Associa o evento às classes
@@ -26,7 +30,7 @@ export default class EventsController {
     return response.created({ event })
   }
 
-  public async sendEvent({ response, request }: HttpContextContract) {
+  public async sendEventToClass({ response, request }: HttpContextContract) {
     const { ['event_id']: eventsIds, ['class_id']: classIds } =
       await request.validate(SendEventValidator)
 

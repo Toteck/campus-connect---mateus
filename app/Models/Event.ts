@@ -20,11 +20,11 @@ export default class Event extends BaseModel {
   @column()
   public description: string
 
-  @column.dateTime()
-  public date: DateTime
-
   @column()
   public category: 'notícia' | 'edital' | 'evento' | 'reunião'
+
+  @column()
+  public status?: 'andamento' | 'concluído' | 'suspenso'
 
   @column()
   public thumbnail: string | null

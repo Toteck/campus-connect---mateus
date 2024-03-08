@@ -46,6 +46,10 @@ export default class ClassesController {
     return response.created({ classe })
   }
 
+  // public async addStudent({request, response}: HttpContextContract) {
+
+  // }
+
   public async update({ request, response }: HttpContextContract) {
     const id = request.param('id')
 

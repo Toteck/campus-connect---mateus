@@ -9,8 +9,8 @@ export default class extends BaseSchema {
 
       table.string('title', 255).notNullable().unique()
       table.text('description').notNullable()
-      table.dateTime('date').notNullable()
       table.enum('category', ['notícia', 'edital', 'evento', 'reunião'] as const).notNullable()
+      table.enum('status', ['andamento', 'conclúido', 'suspenso'] as const).nullable()
       table.string('thumbnail', 255).nullable()
       table.json('anexo').nullable()
       table.integer('publisher').unsigned().references('id').inTable('users').onDelete('SET NULL')

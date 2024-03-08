@@ -36,6 +36,43 @@ test.group('Classes', (group) => {
     console.log(response2.body().classe)
   })
 
+  test('deve adicionar um estudante a uma turma', async ({ client, assert }) => {
+    const user = await AdmFactory.create()
+    // Para mim criar uma turma eu preciso criar um curso antes
+    const coursePayload = {
+      degree: 'superior',
+      name: 'Sistemas de Internet',
+    }
+
+    const response = await client.post('/course').json(coursePayload).loginAs(user)
+    response.assertStatus(201)
+    const course = response.body().course
+
+    // Criação da turma
+    const classPayload = {
+      name: 'Tec. em Sistemas de Internet 2022.2',
+      year: '2022',
+      period: '2',
+      shift: 'vespertino',
+      courseId: course.id,
+    }
+
+    const response2 = await client.post('/classes').json(classPayload).loginAs(user)
+    response2.assertStatus(201)
+
+    const userPayload = {
+      name: 'mateus',
+      register: '20222SPI.TMN0011',
+      email: 'test@gmail.com',
+      password: '12345678',
+      profile: 'student',
+      photo: 'https://i.pinimg.com/564x/eb/87/89/eb878994e94c2cfe7575a02a82b487d6.jpg',
+    }
+    
+    const response3 = await client.post('/users').json(userPayload)
+    response3.assertStatus(201)
+  })
+
   test('it should try to create a class with data being used by another class', async ({
     client,
     assert,
