@@ -36,15 +36,15 @@ test.group('Classes', (group) => {
     console.log(response2.body().classe)
   })
 
-  test('deve adicionar um estudante a uma turma', async ({ client, assert }) => {
-    const user = await AdmFactory.create()
-    // Para mim criar uma turma eu preciso criar um curso antes
+  test('it should add student to a class', async ({ client, assert }) => {
+    const admUser = await AdmFactory.create()
+    // Criando um curso
     const coursePayload = {
       degree: 'superior',
       name: 'Sistemas de Internet',
     }
 
-    const response = await client.post('/course').json(coursePayload).loginAs(user)
+    const response = await client.post('/course').json(coursePayload).loginAs(admUser)
     response.assertStatus(201)
     const course = response.body().course
 
@@ -57,9 +57,11 @@ test.group('Classes', (group) => {
       courseId: course.id,
     }
 
-    const response2 = await client.post('/classes').json(classPayload).loginAs(user)
+    const response2 = await client.post('/classes').json(classPayload).loginAs(admUser)
     response2.assertStatus(201)
+    const classe = response2.body().classe
 
+    // Criando um estudante
     const userPayload = {
       name: 'mateus',
       register: '20222SPI.TMN0011',
@@ -68,9 +70,31 @@ test.group('Classes', (group) => {
       profile: 'student',
       photo: 'https://i.pinimg.com/564x/eb/87/89/eb878994e94c2cfe7575a02a82b487d6.jpg',
     }
-    
+
     const response3 = await client.post('/users').json(userPayload)
     response3.assertStatus(201)
+
+    // Fazendo o login do estudante
+    const loginStudent = await client
+      .post('/sessions')
+      .json({ email: 'test@gmail.com', password: '12345678' })
+    loginStudent.assertStatus(201)
+
+    const student = loginStudent.body().user
+
+    // student and class
+    const studentClass = {
+      student_id: student.id,
+      class_id: classe.id,
+    }
+
+    // Adicionando o estudante a uma turma
+    const response5 = await client
+      .post(`/classes/${classe.id}/students/${student.id}`)
+      .json(studentClass)
+      .loginAs(loginStudent.body().user)
+    response5.assertStatus(201)
+    console.log(response5.body().classe)
   })
 
   test('it should try to create a class with data being used by another class', async ({

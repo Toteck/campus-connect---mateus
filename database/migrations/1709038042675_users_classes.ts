@@ -13,7 +13,7 @@ export default class extends BaseSchema {
         .integer('class_id')
         .unsigned()
         .references('id')
-        .inTable('class')
+        .inTable('classes')
         .onDelete('CASCADE')
         .notNullable()
 

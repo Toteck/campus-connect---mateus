@@ -6,6 +6,13 @@ Route.get('/events', 'EventsController.index').middleware(['auth', 'acl:student,
 // User
 Route.post('/users', 'UsersController.store')
 
+// Classe
+// Rota para adicionar estudante a uma turma
+Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStudent').middleware([
+  'auth',
+  'acl:student',
+])
+
 Route.group(() => {
   // Session
   Route.delete('/sessions', 'SessionsController.destroy')
@@ -20,6 +27,7 @@ Route.group(() => {
 
   // Classes
   Route.post('/classes', 'ClassesController.store')
+
   Route.patch('/classes/:id', 'ClassesController.update')
   Route.get('/classes/:id', 'ClassesController.show')
   Route.get('/classes', 'ClassesController.index')

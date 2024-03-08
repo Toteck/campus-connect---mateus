@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CreateEventValidator from 'App/Validators/CreateEventValidator'
 import Event from 'App/Models/Event'
-import { DateTime } from 'luxon'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import Class from 'App/Models/Class'
 import SendEventValidator from 'App/Validators/SendEventValidator'

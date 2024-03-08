@@ -2,6 +2,8 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import Class from 'App/Models/Class'
 import Course from 'App/Models/Course'
+import User from 'App/Models/User'
+import AddStudentValidator from 'App/Validators/AddStudentValidator'
 import CreateClassValidator from 'App/Validators/CreateClassValidator'
 import UpdateClassValidator from 'App/Validators/UpdateClassValidator'
 
@@ -46,9 +48,18 @@ export default class ClassesController {
     return response.created({ classe })
   }
 
-  // public async addStudent({request, response}: HttpContextContract) {
+  public async addStudent({ request, response }: HttpContextContract) {
+    const classId = request.param('classId')
+    const studentId = request.param('studentId')
 
-  // }
+    const classe = await Class.findOrFail(classId)
+    const student = await User.findOrFail(studentId)
+
+    await classe.related('students').attach([student.id])
+    await classe.load('students')
+    await classe.load('courseClass')
+    return response.created({ classe })
+  }
 
   public async update({ request, response }: HttpContextContract) {
     const id = request.param('id')

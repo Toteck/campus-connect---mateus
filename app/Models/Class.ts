@@ -10,7 +10,6 @@ import {
 import Course from './Course'
 import User from './User'
 import Event from './Event'
-import Event from './Event'
 
 export default class Class extends BaseModel {
   @column({ isPrimary: true })
