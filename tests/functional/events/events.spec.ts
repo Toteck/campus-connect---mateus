@@ -349,7 +349,11 @@ test.group('Events', (group) => {
     const student = await StudentFactory.create()
 
     for (let i = 0; i < 6; i++) {
-      await EventFactory.create()
+      await EventFactory.merge({
+        publisher: admUser.id,
+        category: 'edital',
+        status: 'andamento',
+      }).create()
     }
 
     const response = await client.get('/events').loginAs(student)
@@ -370,6 +374,7 @@ test.group('Events', (group) => {
       description: 'teste',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -386,6 +391,7 @@ test.group('Events', (group) => {
       description: 'qualquer coisa',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -413,6 +419,7 @@ test.group('Events', (group) => {
       description: 'teste',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -429,6 +436,7 @@ test.group('Events', (group) => {
       description: 'qualquer coisa',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -450,18 +458,18 @@ test.group('Events', (group) => {
   test('it should return all events by category', async ({ client, assert }) => {
     const user = await AdmFactory.create()
     for (let i = 0; i < 3; i++) {
-      await EventFactory.merge({ category: 'notícia' }).create()
-    }
-
-    for (let i = 0; i < 3; i++) {
-      await EventFactory.merge({ category: 'edital' }).create()
+      await EventFactory.merge({
+        publisher: user.id,
+        category: 'edital',
+        status: 'andamento',
+      }).create()
     }
 
     const response = await client.get(`/events?category=edital`).loginAs(user)
 
     response.assertStatus(200)
 
-    console.log(response.body())
+    console.log(response.body().events.data)
   })
 
   // Retorna todos os eventos por categoria e título ou descrição
@@ -477,6 +485,7 @@ test.group('Events', (group) => {
       description: 'teste',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -493,6 +502,7 @@ test.group('Events', (group) => {
       description: 'qualquer coisa',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
@@ -520,6 +530,7 @@ test.group('Events', (group) => {
         'Processo Seletivo Simplificado para o Programa de Monitoria referente ao primeiro semestre de 2024 para os Cursos Superiores do IFMA Campus Timon.',
       date: '2024-02-01',
       category: 'edital',
+      status: 'andamento',
       thumbnail: 'https://portal.ifma.edu.br/wp-content/uploads/2024/02/CERTEC-Parceria-EBC-5.jpg',
       anexo: [
         'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTAyMTE1M2FlZmJiMzg1YWNhZjk2MzkzNTIxMWQ3M1t8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMTJfMjAyNC5wZGY=',
