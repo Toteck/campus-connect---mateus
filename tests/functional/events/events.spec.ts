@@ -159,6 +159,90 @@ test.group('Events', (group) => {
     console.log(response2.body().events)
   })
 
+  test('it should send an event to all classes of a course', async ({ client }) => {
+    const userAdm = await AdmFactory.create()
+
+    const course = await CourseFactory.create()
+
+    // Criação da turma 1
+    const classPayload = {
+      name: 'Técnologo em Sistemas de Internet 2022.2',
+      year: '2022',
+      period: '2',
+      shift: 'vespertino',
+      courseId: course.id,
+    }
+
+    const response = await client.post('/classes').json(classPayload).loginAs(userAdm)
+
+    const sistemasParaInternet2022 = response.body().classe
+
+    const classPayload2 = {
+      name: 'Técnologo em Sistemas de Internet 2023.2',
+      year: '2023',
+      period: '2',
+      shift: 'verspertino',
+      courseId: course.id,
+    }
+
+    const response2 = await client.post('/classes').json(classPayload2).loginAs(userAdm)
+    const sistemasParaInternet2023 = response2.body().classe
+
+    const eventPayload = {
+      title:
+        'Edital nº 4/2024 - Seleção de Alunas para o Programa Mulheres MIL - Gestor de Microempresas 2024',
+      description:
+        'Seleção de Alunas para o Curso de Formação Inicial e Continuada (FIC) de GESTOR DE MICROEMPRESA do Programa Mulheres Mil.',
+      date: '2024-01-31',
+      category: 'edital',
+      status: 'andamento',
+      anexo: [
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTQ5MWYyMmUxYjFmMDNmODUyNjk3ZTA2Njc2MDRmY1t8XTAwM19TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTIyMDlhMDNiY2QwZWMzYzA4OTc2ZGZmMGU1MzE5N1t8XTAwMl9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQWNhYzEyZGU3ZDhiNzBhOGJhMWY1MzM1YzkzZDRlZVt8XTAwMV9TZWxldGl2b19BbHVub19UTU5fNF8yMDI0LnBkZg==',
+      ],
+      publisher: userAdm.id,
+    }
+
+    const eventPayload2 = {
+      title:
+        'Edital nº 3/2024 - Seleção de discentes para o curso Especialização em Ensino de ciências - Timon',
+      description:
+        'Seleção de discentes para o curso de Pós-graduação Lato sensu - Especialização em Ensino de Ciências',
+      date: '2024-01-04',
+      category: 'edital',
+      status: 'andamento',
+      anexo: [
+        'https://portal.ifma.edu.br/concursos-e-seletivos/?d=KyMzdWRdMEtRIkMmUENcRX5oc0B6RHxGZFdEQUNHVXNTRVBBUkFET1JASUZNQTdjMzEwZGU1ODdiNGJkNGE2MWYxMTk1OGQ5MTc3Nlt8XTAwMV9TZWxldGl2b19BbHVub19UTU5fMDNfMjAyNC5wZGY=',
+      ],
+      publisher: userAdm.id,
+    }
+
+    // Cria o evento 1
+    const response3 = await client.post('/events').json(eventPayload).loginAs(userAdm)
+    response.assertStatus(201)
+    const event1 = response3.body().event
+
+    // Cria o evento 2
+    const response4 = await client.post('/events').json(eventPayload2).loginAs(userAdm)
+    response4.assertStatus(201)
+    const event2 = response4.body().event
+
+    // eventos e cursos para onde eu vou enviar
+    const eventsToCourses = {
+      events_id: [event1.id, event2.id],
+      courses_id: [course.id],
+    }
+
+    const response5 = await client
+      .post('/events/send-to-course/')
+      .json(eventsToCourses)
+      .loginAs(userAdm)
+    response5.assertStatus(200)
+
+    console.log(response5.body().events)
+  })
+
   test('it should try to create an event with an already existing title', async ({
     client,
     assert,

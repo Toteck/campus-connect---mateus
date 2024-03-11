@@ -35,7 +35,7 @@ Route.group(() => {
   // Events
   Route.post('/events', 'EventsController.store')
   Route.post('/events/send/:id', 'EventsController.sendEventToClass')
+  Route.post('/events/send-to-course/', 'EventsController.sendEventByCourse')
   Route.patch('/events/:id', 'EventsController.update')
-  //Route.get('/events', 'EventsController.index')
   Route.delete('/events/:id', 'EventsController.destroy')
 }).middleware(['auth', 'acl:server adm'])

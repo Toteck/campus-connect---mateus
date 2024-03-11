@@ -4,6 +4,8 @@ import Event from 'App/Models/Event'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import Class from 'App/Models/Class'
 import SendEventValidator from 'App/Validators/SendEventValidator'
+import Course from 'App/Models/Course'
+import SendToCourseValidator from 'App/Validators/SendToCourseValidator'
 
 export default class EventsController {
   public async store({ response, request }: HttpContextContract) {
@@ -33,13 +35,12 @@ export default class EventsController {
     const { ['event_id']: eventsIds, ['class_id']: classIds } =
       await request.validate(SendEventValidator)
 
-    //const event = await Event.findOrFail(eventId)
-
     const events: Event[] = [] // Array para armazenar os eventos
 
     for (const eventId of eventsIds) {
       // 1) Verifico se o evento existe
       const event = await Event.findOrFail(eventId)
+
       for (const classId of classIds) {
         // 2) Atribuo o evento as turmas
         const classe = await Class.findOrFail(classId)
@@ -52,6 +53,44 @@ export default class EventsController {
     }
 
     return response.created({ events })
+  }
+
+  public async sendEventByCourse({ response, request }: HttpContextContract) {
+    const { ['events_id']: eventsIds, ['courses_id']: coursesIds } =
+      await request.validate(SendToCourseValidator)
+
+    const events: Event[] = [] // Array para armazenar os eventos
+
+    for (const eventId of eventsIds) {
+      // 1) Verifico se o evento existe
+      const event = await Event.findOrFail(eventId)
+
+      for (const courseId of coursesIds) {
+        // Verifico se o curso existe
+        const course = await Event.findOrFail(courseId)
+
+        // Busca todas as turmas associadas ao curso especificado
+        const classes = await Class.query().where('course_id', course.id)
+
+        // Se não encontrar turmas, pode optar por devolver um erro ou apenas finalizar a função
+        if (classes.length === 0) {
+          throw new BadRequestException('No classes found for the specified course', 404)
+        }
+
+        // Para cada turma encontrada, associa o evento
+        for (const classe of classes) {
+          await event.related('classes').attach([classe.id])
+        }
+        // Carrega os relacionamentos para resposta
+        await event.load('classes')
+        await event.load('publisherUser')
+      }
+
+      events.push(event) // Adiciona o evento ao array de eventos
+    }
+
+    // Devolve a lista de eventos com as turmas atualizadas
+    return response.ok({ events })
   }
 
   public async update({ request, response }: HttpContextContract) {
