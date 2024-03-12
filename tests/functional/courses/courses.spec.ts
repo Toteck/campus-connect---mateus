@@ -14,7 +14,7 @@ test.group('Group', (group) => {
 
   test('it should create a course', async ({ client }) => {
     const admUser = await AdmFactory.create()
-    const student = await StudentFactory.create()
+
     const coursePayload = {
       degree: 'médio técnico',
       name: 'Informática',

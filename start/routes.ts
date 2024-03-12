@@ -5,6 +5,10 @@ Route.post('/sessions', 'SessionsController.store') // Login
 Route.get('/events', 'EventsController.index').middleware(['auth', 'acl:student,server adm'])
 // User
 Route.post('/users', 'UsersController.store')
+Route.patch('/users/update/:id', 'UsersController.update').middleware([
+  'auth',
+  'acl:student,server adm,professor,parent',
+])
 
 // Classe
 // Rota para adicionar estudante a uma turma

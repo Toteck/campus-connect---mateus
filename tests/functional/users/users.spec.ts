@@ -82,6 +82,61 @@ test.group('User', (group) => {
     console.log(response.body().user)
   })
 
+  test('it should update an user', async ({ client }) => {
+    const userPayload = {
+      name: 'Abilio',
+      register: '20192PRF.TMN0012',
+      email: 'abilio@gmail.com',
+      password: '12345678',
+      profile: 'professor',
+      photo: 'https://i.pinimg.com/564x/eb/87/89/eb878994e94c2cfe7575a02a82b487d6.jpg',
+    }
+    const response = await client.post('/users').json(userPayload)
+    response.assertStatus(201)
+    console.log(response.body().user)
+    const abilio = response.body().user
+
+    const response2 = await client
+      .patch(`/users/update/${abilio.id}`)
+      .json({ email: 'abilio@gmail.com', password: '12345678', register: '1845623' })
+      .loginAs(response.body().user)
+
+    console.log(response2.body().user)
+  })
+
+  test('it should try to update a user with a record from another user', async ({ client }) => {
+    const professor1 = {
+      name: 'ABILIO SOARES COELHO',
+      register: '1845623',
+      email: 'prof.abilio.coelho@acad.ifma.edu.br',
+      password: '12345678',
+      profile: 'professor',
+    }
+
+    const professor2 = {
+      name: 'IGO COUTINHO MOURA',
+      register: '1106075',
+      email: 'prof.igo.moura@acad.ifma.edu.br',
+      password: '12345678',
+      profile: 'professor',
+    }
+
+    const response1 = await client.post('/users').json(professor1)
+    response1.assertStatus(201)
+    const professorAbilio = response1.body().user
+
+    const response2 = await client.post('/users').json(professor2)
+    response2.assertStatus(201)
+    const professorIgor = response2.body().user
+
+    const response3 = await client
+      .patch(`/users/update/${professorIgor.id}`)
+      .json({ email: 'prof.igo.moura@acad.ifma.edu.br', password: '12345678', register: '1845623' })
+      .loginAs(response1.body().user)
+    response3.assertStatus(409)
+    console.log(response3.body())
+  })
+
   test('it should try create an invalid profile', async ({ client, assert }) => {
     const userPayload = {
       name: 'teste',
