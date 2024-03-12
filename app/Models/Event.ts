@@ -45,6 +45,11 @@ export default class Event extends BaseModel {
   })
   public classes: ManyToMany<typeof Class>
 
+  @manyToMany(() => User, {
+    pivotTable: 'users_events',
+  })
+  public users: ManyToMany<typeof User>
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

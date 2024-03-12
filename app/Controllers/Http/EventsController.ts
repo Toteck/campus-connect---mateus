@@ -6,6 +6,8 @@ import Class from 'App/Models/Class'
 import SendEventValidator from 'App/Validators/SendEventValidator'
 import Course from 'App/Models/Course'
 import SendToCourseValidator from 'App/Validators/SendToCourseValidator'
+import SendToUserValidator from 'App/Validators/SendToUserValidator'
+import User from 'App/Models/User'
 
 export default class EventsController {
   public async store({ response, request }: HttpContextContract) {
@@ -91,6 +93,35 @@ export default class EventsController {
 
     // Devolve a lista de eventos com as turmas atualizadas
     return response.ok({ events })
+  }
+
+  public async sendEventByUser({ response, request }: HttpContextContract) {
+    const { ['events_ids']: eventsIds, ['users_ids']: usersIds } =
+      await request.validate(SendToUserValidator)
+
+    console.log(eventsIds, usersIds)
+
+    const events: Event[] = [] // Array para armezenar os eventos
+    const users: User[] = [] // Array para armezenar os eventos
+
+    for (const eventId of eventsIds) {
+      const event = await Event.findOrFail(eventId)
+
+      for (const userId of usersIds) {
+        const user = await User.findOrFail(userId)
+
+        await user.related('events').attach([event.id])
+
+        // await user.load('events')
+
+        //events.push(event)
+      }
+      await event.load('users')
+      events.push(event)
+      //users.push(event)
+    }
+
+    return response.created({ events })
   }
 
   public async update({ request, response }: HttpContextContract) {
