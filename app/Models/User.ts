@@ -1,8 +1,17 @@
 import { DateTime } from 'luxon'
-import { BaseModel, ManyToMany, beforeSave, column, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  HasMany,
+  ManyToMany,
+  beforeSave,
+  column,
+  hasMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import Class from './Class'
 import Event from './Event'
+import LinkToken from './LinkToken'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -31,6 +40,11 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @hasMany(() => LinkToken, {
+    foreignKey: 'userId',
+  })
+  public tokens: HasMany<typeof LinkToken>
 
   @manyToMany(() => Class, {
     pivotTable: 'users_classes',

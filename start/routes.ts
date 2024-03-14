@@ -17,6 +17,9 @@ Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStuden
   'acl:student',
 ])
 
+// Passwords
+Route.post('/forgot-password', 'PasswordsController.forgotPassword')
+
 Route.group(() => {
   // Session
   Route.delete('/sessions', 'SessionsController.destroy')
