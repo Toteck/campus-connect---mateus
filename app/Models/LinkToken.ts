@@ -9,13 +9,13 @@ export default class LinkToken extends BaseModel {
   @column()
   public token: string
 
-  @belongsTo(() => User, {
-    foreignKey: 'user_id',
-  })
-  public user: BelongsTo<typeof User>
-
   @column({ columnName: 'user_id' })
   public userId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  public user: BelongsTo<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

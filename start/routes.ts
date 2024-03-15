@@ -19,6 +19,7 @@ Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStuden
 
 // Passwords
 Route.post('/forgot-password', 'PasswordsController.forgotPassword')
+Route.post('reset-password', 'PasswordsController.resetPassword')
 
 Route.group(() => {
   // Session
