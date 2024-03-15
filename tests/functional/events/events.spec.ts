@@ -41,19 +41,9 @@ test.group('Events', (group) => {
   test('it should create an event and send it to the classes', async ({ client }) => {
     const userAdm = await AdmFactory.create()
     const course = await CourseFactory.create()
-    const course2 = await CourseFactory.merge({
-      degree: 'médio técnico',
-      name: 'Administração',
-    }).create()
+    const student = await StudentFactory.create()
 
     const sistemasParaInternet = await ClassFactory.merge({ courseId: course.id }).create()
-    const administracao = await ClassFactory.merge({
-      name: 'Administração 2022 Matutino',
-      year: '2022',
-      period: '1',
-      shift: 'matutino',
-      courseId: course2.id,
-    }).create()
 
     const eventPayload = {
       title:
@@ -75,17 +65,31 @@ test.group('Events', (group) => {
     const response = await client.post('/events').json(eventPayload).loginAs(userAdm)
     response.assertStatus(201)
 
+    // Adiciona um aluno a uma turma
+    const studentClass = {
+      student_id: student.id,
+      class_id: sistemasParaInternet.id,
+    }
+
+    // Adicionando o estudante a uma turma
+    const response5 = await client
+      .post(`/classes/${sistemasParaInternet.id}/students/${student.id}`)
+      .json(studentClass)
+      .loginAs(student)
+    response5.assertStatus(201)
+
     // Envia o evento para as turmas
     // evento e turmas que eu vou enviar
     const eventsToClasses = {
       event_id: [response.body().event.id],
-      class_id: [sistemasParaInternet.id, administracao.id],
+      class_id: [sistemasParaInternet.id],
     }
     const response2 = await client
       .post(`/events/send/${response.body().event.id}`)
       .json(eventsToClasses)
       .loginAs(userAdm)
     response2.assertStatus(201)
+
     console.log(response2.body().events)
   })
 

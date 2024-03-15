@@ -4,7 +4,6 @@ import Event from 'App/Models/Event'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import Class from 'App/Models/Class'
 import SendEventValidator from 'App/Validators/SendEventValidator'
-import Course from 'App/Models/Course'
 import SendToCourseValidator from 'App/Validators/SendToCourseValidator'
 import SendToUserValidator from 'App/Validators/SendToUserValidator'
 import User from 'App/Models/User'
@@ -46,11 +45,20 @@ export default class EventsController {
       for (const classId of classIds) {
         // 2) Atribuo o evento as turmas
         const classe = await Class.findOrFail(classId)
-        await event.related('classes').attach([classe.id])
+
+        // Buscar todos os alunos relacionados a essa classe
+        const students = await classe.related('students').query()
+
+        // Anexar o evento a cada aluno
+        for (const student of students) {
+          await event.related('users').attach([student.id])
+        }
+        //await event.related('classes').attach([classe.id])
       }
       // Carrego os relacionamentos do evento
-      await event.load('classes')
+      //await event.load('classes')
       await event.load('publisherUser')
+      await event.load('users')
       events.push(event) // Adiciona o evento ao array de eventos
     }
 
