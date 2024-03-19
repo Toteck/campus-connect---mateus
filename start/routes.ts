@@ -1,17 +1,29 @@
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.get('/', async () => {
+  return { hello: 'world' }
+})
+
 // Session
 Route.post('/sessions', 'SessionsController.store') // Login
+// Session
+Route.delete('/sessions', 'SessionsController.destroy').middleware([
+  'auth',
+  'acl:student,server adm,parent,professor',
+])
+
+// Rota para listar todos os eventos
 Route.get('/events', 'EventsController.index').middleware(['auth', 'acl:student,server adm'])
+
 // User
-Route.post('/users', 'UsersController.store')
+Route.post('/users', 'UsersController.store') // Rota para criação de contas
 Route.patch('/users/update/:id', 'UsersController.update').middleware([
   'auth',
   'acl:student,server adm,professor,parent',
-])
+]) // Rota para atualização de dados do usuário
 
 // Classe
-// Rota para adicionar estudante a uma turma
+// Rota para adicionar estudante a uma turma! O estudante seleciona a turma no qual ele participa
 Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStudent').middleware([
   'auth',
   'acl:student',
@@ -21,10 +33,8 @@ Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStuden
 Route.post('/forgot-password', 'PasswordsController.forgotPassword')
 Route.post('reset-password', 'PasswordsController.resetPassword')
 
+// Rotas pertecentens somente ao usuário adm
 Route.group(() => {
-  // Session
-  Route.delete('/sessions', 'SessionsController.destroy')
-
   // Course
   Route.post('/course', 'CoursesController.store')
   Route.get('/course/:id', 'CoursesController.show')
@@ -35,7 +45,6 @@ Route.group(() => {
 
   // Classes
   Route.post('/classes', 'ClassesController.store')
-
   Route.patch('/classes/:id', 'ClassesController.update')
   Route.get('/classes/:id', 'ClassesController.show')
   Route.get('/classes', 'ClassesController.index')

@@ -40,10 +40,10 @@ export default class Event extends BaseModel {
   })
   public publisherUser: BelongsTo<typeof User>
 
-  @manyToMany(() => Class, {
-    pivotTable: 'classes_events',
-  })
-  public classes: ManyToMany<typeof Class>
+  // @manyToMany(() => Class, {
+  //   pivotTable: 'classes_events',
+  // })
+  // public classes: ManyToMany<typeof Class>
 
   @manyToMany(() => User, {
     pivotTable: 'users_events',

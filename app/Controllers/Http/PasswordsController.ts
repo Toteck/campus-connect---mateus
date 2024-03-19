@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import User from 'App/Models/User'
-import Database from '@ioc:Adonis/Lucid/Database'
 import { randomBytes } from 'crypto'
 import { promisify } from 'util'
 import ForgotPassword from 'App/Validators/ForgotPasswordValidator'

@@ -16,8 +16,7 @@ test.group('Session', (group) => {
 
     const response = await client.post('/sessions').json({ email, password: purePassword })
     response.assertStatus(201)
-    console.log({ user: response.body().user })
-    console.log({ user: response.body().token })
+
     assert.isDefined(response.body().user, 'User undefined')
     assert.equal(response.body().user.id, id)
   })

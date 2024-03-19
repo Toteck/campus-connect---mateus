@@ -1,14 +1,25 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'link_tokens'
+  protected tableName = 'classes'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id').primary()
+      table.increments('id')
 
-      table.string('token', 255).notNullable().unique()
-      table.string('user_id').unsigned().references('id').inTable('users').notNullable()
+      table.string('name').notNullable()
+      table.string('year', 4).notNullable()
+      table.string('period', 2).notNullable()
+      table.string('shift', 15).notNullable()
+
+      table
+        .integer('course_id')
+        .unsigned()
+        .references('id')
+        .inTable('courses')
+        .notNullable()
+        .onDelete('CASCADE')
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

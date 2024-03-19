@@ -53,10 +53,9 @@ export default class EventsController {
         for (const student of students) {
           await event.related('users').attach([student.id])
         }
-        //await event.related('classes').attach([classe.id])
       }
       // Carrego os relacionamentos do evento
-      //await event.load('classes')
+
       await event.load('publisherUser')
       await event.load('users')
       events.push(event) // Adiciona o evento ao array de eventos
@@ -89,13 +88,18 @@ export default class EventsController {
 
         // Para cada turma encontrada, associa o evento
         for (const classe of classes) {
-          await event.related('classes').attach([classe.id])
+          // Buscar todos os alunos relacionados a essa classe
+          const students = await classe.related('students').query()
+          // Anexar o evento a cada aluno
+          for (const student of students) {
+            await event.related('users').attach([student.id])
+          }
+          //await event.related('classes').attach([classe.id])
         }
-        // Carrega os relacionamentos para resposta
-        await event.load('classes')
-        await event.load('publisherUser')
       }
-
+      // Carrega os relacionamentos para resposta
+      await event.load('publisherUser')
+      await event.load('users')
       events.push(event) // Adiciona o evento ao array de eventos
     }
 
@@ -107,10 +111,7 @@ export default class EventsController {
     const { ['events_ids']: eventsIds, ['users_ids']: usersIds } =
       await request.validate(SendToUserValidator)
 
-    console.log(eventsIds, usersIds)
-
     const events: Event[] = [] // Array para armezenar os eventos
-    const users: User[] = [] // Array para armezenar os eventos
 
     for (const eventId of eventsIds) {
       const event = await Event.findOrFail(eventId)
@@ -119,14 +120,9 @@ export default class EventsController {
         const user = await User.findOrFail(userId)
 
         await user.related('events').attach([event.id])
-
-        // await user.load('events')
-
-        //events.push(event)
       }
       await event.load('users')
       events.push(event)
-      //users.push(event)
     }
 
     return response.created({ events })

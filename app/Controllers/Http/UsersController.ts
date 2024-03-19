@@ -3,6 +3,7 @@ import BadRequestException from 'App/Exceptions/BadRequestException'
 import User from 'App/Models/User'
 import CreateUserValidator from 'App/Validators/CreateUserValidator'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
+import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class UsersController {
   public async store({ response, request }: HttpContextContract) {
@@ -21,6 +22,12 @@ export default class UsersController {
 
     // Encontramos o usuário pelo ID
     const user = await User.findOrFail(id)
+
+    const isPasswordValid = await Hash.verify(user.password, password)
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Invalid password', 401)
+    }
 
     // Informações para atualizar o evento
     const payload = request.all()

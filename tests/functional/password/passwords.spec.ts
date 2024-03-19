@@ -1,12 +1,9 @@
 /* eslint-disable prettier/prettier */
 import Hash from '@ioc:Adonis/Core/Hash'
-import Mail from '@ioc:Adonis/Addons/Mail'
 import Database from '@ioc:Adonis/Lucid/Database'
-import { assert } from '@japa/preset-adonis'
 import { test } from '@japa/runner'
 import StudentFactory from 'Database/factories/StudentFactory'
 import { DateTime, Duration } from 'luxon'
-import { CannotListDirectoryException } from '@adonisjs/core/build/standalone'
 
 test.group('Password', (group) => {
   group.each.setup(async () => {

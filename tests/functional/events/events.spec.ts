@@ -165,7 +165,7 @@ test.group('Events', (group) => {
 
   test('it should send an event to all classes of a course', async ({ client }) => {
     const userAdm = await AdmFactory.create()
-
+    const student = await StudentFactory.create()
     const course = await CourseFactory.create()
 
     // Criação da turma 1
@@ -178,19 +178,19 @@ test.group('Events', (group) => {
     }
 
     const response = await client.post('/classes').json(classPayload).loginAs(userAdm)
-
-    const sistemasParaInternet2022 = response.body().classe
-
-    const classPayload2 = {
-      name: 'Técnologo em Sistemas de Internet 2023.2',
-      year: '2023',
-      period: '2',
-      shift: 'verspertino',
-      courseId: course.id,
+    const sistemasParaInternet = response.body().classe
+    // Adiciona um aluno a uma turma
+    const studentClass = {
+      student_id: student.id,
+      class_id: sistemasParaInternet.id,
     }
 
-    const response2 = await client.post('/classes').json(classPayload2).loginAs(userAdm)
-    const sistemasParaInternet2023 = response2.body().classe
+    // Adicionando o estudante a uma turma
+    const response1 = await client
+      .post(`/classes/${sistemasParaInternet.id}/students/${student.id}`)
+      .json(studentClass)
+      .loginAs(student)
+    response1.assertStatus(201)
 
     const eventPayload = {
       title:
