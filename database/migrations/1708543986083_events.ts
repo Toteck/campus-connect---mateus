@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.enum('category', ['notícia', 'edital', 'evento', 'reunião'] as const).notNullable()
       table.enum('status', ['andamento', 'conclúido', 'suspenso'] as const).nullable()
       table.string('thumbnail', 255).nullable()
-      table.json('anexo').nullable()
+      table.specificType('anexo', 'text[]').nullable()
       table.integer('publisher').unsigned().references('id').inTable('users').onDelete('SET NULL')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

@@ -49,8 +49,8 @@ export default class ClassesController {
   }
 
   public async addStudent({ request, response }: HttpContextContract) {
-    const classId = request.param('classId')
-    const studentId = request.param('studentId')
+    const classId = request.param('classId') as number
+    const studentId = request.param('studentId') as number
 
     const classe = await Class.findOrFail(classId)
     const student = await User.findOrFail(studentId)
