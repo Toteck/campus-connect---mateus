@@ -85,7 +85,7 @@ test.group('Events', (group) => {
       class_id: [sistemasParaInternet.id],
     }
     const response2 = await client
-      .post(`/events/send/${response.body().event.id}`)
+      .post(`/events/send-to-class/`)
       .json(eventsToClasses)
       .loginAs(userAdm)
     response2.assertStatus(201)

@@ -9,7 +9,13 @@ export default class extends BaseSchema {
 
       table.integer('user_id').unsigned().references('id').inTable('users').notNullable()
 
-      table.integer('event_id').unsigned().references('id').inTable('events').notNullable()
+      table
+        .integer('event_id')
+        .unsigned()
+        .references('id')
+        .inTable('events')
+        .notNullable()
+        .onDelete('CASCADE')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

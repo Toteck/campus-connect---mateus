@@ -51,7 +51,8 @@ Route.group(() => {
 
   // Events
   Route.post('/events', 'EventsController.store')
-  Route.post('/events/send/:id', 'EventsController.sendEventToClass')
+  //Route.post('/events/send/:id', 'EventsController.sendEventToClass')
+  Route.post('/events/send-to-class/', 'EventsController.sendEventToClass')
   Route.post('/events/send-to-course/', 'EventsController.sendEventByCourse')
   Route.post('/events/send-to-user/', 'EventsController.sendEventByUser')
   Route.patch('/events/:id', 'EventsController.update')

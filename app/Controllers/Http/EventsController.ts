@@ -7,6 +7,7 @@ import SendEventValidator from 'App/Validators/SendEventValidator'
 import SendToCourseValidator from 'App/Validators/SendToCourseValidator'
 import SendToUserValidator from 'App/Validators/SendToUserValidator'
 import User from 'App/Models/User'
+import Course from 'App/Models/Course'
 
 export default class EventsController {
   public async store({ response, request }: HttpContextContract) {
@@ -68,15 +69,19 @@ export default class EventsController {
     const { ['events_id']: eventsIds, ['courses_id']: coursesIds } =
       await request.validate(SendToCourseValidator)
 
+    console.log({ eventsIds })
+    console.log({ coursesIds })
+
     const events: Event[] = [] // Array para armazenar os eventos
 
     for (const eventId of eventsIds) {
       // 1) Verifico se o evento existe
       const event = await Event.findOrFail(eventId)
-
+      console.log('encontrou um evento')
       for (const courseId of coursesIds) {
         // Verifico se o curso existe
-        const course = await Event.findOrFail(courseId)
+        const course = await Course.findOrFail(courseId)
+        console.log('Encontrou um curso')
 
         // Busca todas as turmas associadas ao curso especificado
         const classes = await Class.query().where('course_id', course.id)
