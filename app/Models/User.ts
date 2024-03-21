@@ -11,6 +11,7 @@ import {
 import Hash from '@ioc:Adonis/Core/Hash'
 import Class from './Class'
 import Event from './Event'
+import LinkToken from './LinkToken'
 //import LinkToken from './LinkToken'
 
 export default class User extends BaseModel {
@@ -41,10 +42,10 @@ export default class User extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  // @hasMany(() => LinkToken, {
-  //   foreignKey: 'userId',
-  // })
-  // public tokens: HasMany<typeof LinkToken>
+  @hasMany(() => LinkToken, {
+    foreignKey: 'userId',
+  })
+  public tokens: HasMany<typeof LinkToken>
 
   @manyToMany(() => Class, {
     pivotTable: 'users_classes',

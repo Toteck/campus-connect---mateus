@@ -1,8 +1,6 @@
+import Drive from '@ioc:Adonis/Core/Drive'
 import Route from '@ioc:Adonis/Core/Route'
-
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
+import fs from 'fs'
 
 // Session
 Route.post('/sessions', 'SessionsController.store') // Login
@@ -31,7 +29,7 @@ Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStuden
 
 // Passwords
 Route.post('/forgot-password', 'PasswordsController.forgotPassword')
-Route.post('reset-password', 'PasswordsController.resetPassword')
+Route.post('/reset-password', 'PasswordsController.resetPassword')
 
 // Rotas pertecentens somente ao usuário adm
 Route.group(() => {
@@ -58,3 +56,14 @@ Route.group(() => {
   Route.patch('/events/:id', 'EventsController.update')
   Route.delete('/events/:id', 'EventsController.destroy')
 }).middleware(['auth', 'acl:server adm'])
+
+// Route.post('upload', async ({ request }) => {
+//   const image = request.file('image')
+//   if (image !== null) {
+//     const fileName = `${Date.now()}.${image.extname}`
+//     const fileStream = fs.createReadStream(image.tmpPath!)
+//     await Drive.putStream(fileName, fileStream, {
+//       contentType: image.headers['content-type'],
+//     })
+//   }
+// })
