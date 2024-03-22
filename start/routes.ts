@@ -1,6 +1,4 @@
-import Drive from '@ioc:Adonis/Core/Drive'
 import Route from '@ioc:Adonis/Core/Route'
-import fs from 'fs'
 
 // Session
 Route.post('/sessions', 'SessionsController.store') // Login
@@ -56,6 +54,8 @@ Route.group(() => {
   Route.patch('/events/:id', 'EventsController.update')
   Route.delete('/events/:id', 'EventsController.destroy')
 }).middleware(['auth', 'acl:server adm'])
+
+Route.post('/upload', 'FilesController.upload')
 
 // Route.post('upload', async ({ request }) => {
 //   const image = request.file('image')

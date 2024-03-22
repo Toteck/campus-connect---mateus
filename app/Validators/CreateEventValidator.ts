@@ -9,8 +9,7 @@ export default class CreateEventValidator {
     description: schema.string({ trim: true }),
     category: schema.enum(['notícia', 'edital', 'evento', 'reunião'] as const),
     status: schema.enum.optional(['andamento', 'concluído', 'suspenso'] as const),
-    thumbnail: schema.string.optional(),
-    anexo: schema.array().members(schema.string()),
+    thumbnail: schema.file.optional(),
     publisher: schema.number(),
   })
 
@@ -21,3 +20,5 @@ export default class CreateEventValidator {
     'category.required': 'A categoria é obrigatória',
   }
 }
+
+//anexo: schema.object.optional().members({ url: schema.string({}) })

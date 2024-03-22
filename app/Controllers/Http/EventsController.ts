@@ -8,12 +8,14 @@ import SendToCourseValidator from 'App/Validators/SendToCourseValidator'
 import SendToUserValidator from 'App/Validators/SendToUserValidator'
 import User from 'App/Models/User'
 import Course from 'App/Models/Course'
+import Drive from '@ioc:Adonis/Core/Drive'
+import fs from 'fs'
 
 export default class EventsController {
   public async store({ response, request }: HttpContextContract) {
     const eventPayload = await request.validate(CreateEventValidator)
 
-    // Busco no banco de dados se já existe um evento com esse título
+    //Busco no banco de dados se já existe um evento com esse título
     const eventByTitle = await Event.findBy('title', eventPayload.title)
 
     if (eventByTitle) {
@@ -24,12 +26,21 @@ export default class EventsController {
       throw new BadRequestException('Notice-type events must have a status', 422)
     }
 
-    const event = await Event.create(eventPayload)
-
-    // Associa o evento às classes
-
+    let thumbnailFileName: string | null = null
+    if (eventPayload.thumbnail !== null) {
+      const image = request.file('thumbnail')
+      if (image) {
+        const fileName = `${Date.now()}.${image.extname}`
+        const fileStream = fs.createReadStream(image.tmpPath!)
+        await Drive.putStream(fileName, fileStream, {
+          contentType: image.headers['content-type'],
+        })
+        thumbnailFileName = fileName
+      }
+    }
+    const event = await Event.create({ ...eventPayload, thumbnail: thumbnailFileName })
+    // Associa o evento ao autor
     await event.load('publisherUser')
-
     return response.created({ event })
   }
 
@@ -68,9 +79,6 @@ export default class EventsController {
   public async sendEventByCourse({ response, request }: HttpContextContract) {
     const { ['events_id']: eventsIds, ['courses_id']: coursesIds } =
       await request.validate(SendToCourseValidator)
-
-    console.log({ eventsIds })
-    console.log({ coursesIds })
 
     const events: Event[] = [] // Array para armazenar os eventos
 

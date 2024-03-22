@@ -8,7 +8,6 @@ import {
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
-import Class from './Class'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -30,20 +29,12 @@ export default class Event extends BaseModel {
   public thumbnail: string | null
 
   @column()
-  public anexo: string[] | null
-
-  @column()
   public publisher: number
 
   @belongsTo(() => User, {
     foreignKey: 'publisher',
   })
   public publisherUser: BelongsTo<typeof User>
-
-  // @manyToMany(() => Class, {
-  //   pivotTable: 'classes_events',
-  // })
-  // public classes: ManyToMany<typeof Class>
 
   @manyToMany(() => User, {
     pivotTable: 'users_events',
