@@ -35,7 +35,8 @@
       "@adonisjs/bouncer",
       "@adonisjs/mail",
       "@adonisjs/view",
-      "@adonisjs/drive-s3"
+      "@adonisjs/drive-s3",
+      "@adonisjs/lucid-slugify"
     ]
   }
 }

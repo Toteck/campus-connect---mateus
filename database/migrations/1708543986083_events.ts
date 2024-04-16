@@ -6,11 +6,12 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-
-      table.string('title', 255).notNullable().unique()
+      table.string('title', 255).notNullable()
+      table.string('slug', 255).unique().notNullable()
       table.text('description').notNullable()
-      table.enum('category', ['notícia', 'edital', 'evento', 'reunião'] as const).notNullable()
-      table.enum('status', ['andamento', 'conclúido', 'suspenso'] as const).nullable()
+      table.string('video_url').nullable()
+      table.integer('post_type').unsigned().notNullable().defaultTo(1)
+      table.integer('status').unsigned().nullable().defaultTo(1)
       table.string('thumbnail').nullable()
       table
         .integer('publisher')
@@ -19,6 +20,7 @@ export default class extends BaseSchema {
         .inTable('users')
         .onDelete('RESTRICT')
         .onUpdate('CASCADE')
+
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

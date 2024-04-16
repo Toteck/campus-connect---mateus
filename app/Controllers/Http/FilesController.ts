@@ -14,8 +14,9 @@ export default class FilesController {
     }
   }
 
-  public async getImage({ params, response }: HttpContextContract) {
-    const url = await Drive.getSignedUrl('')
-    return url
+  public async getImageUrl({ params, response }: HttpContextContract) {
+    const filePath = 'public/images' + params.name + '.png'
+    const url = await Drive.getSignedUrl(filePath)
+    return response.ok({ url: 'http://localhost:3333' + url })
   }
 }

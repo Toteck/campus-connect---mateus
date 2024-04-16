@@ -1,69 +1,100 @@
 import Route from '@ioc:Adonis/Core/Route'
-
+import Drive from '@ioc:Adonis/Core/Drive'
+import { DateTime } from 'luxon'
+import Application from '@ioc:Adonis/Core/Application'
 // Session
-Route.post('/sessions', 'SessionsController.store') // Login
-// Session
-Route.delete('/sessions', 'SessionsController.destroy').middleware([
-  'auth',
-  'acl:student,server adm,parent,professor',
-])
+Route.group(() => {
+  Route.post('/', 'SessionsController.store').as('login') // Login
+  Route.delete('/', 'SessionsController.destroy').middleware(['auth']).as('logout')
+}).prefix('sessions')
 
 // Rota para listar todos os eventos
-Route.get('/events', 'EventsController.index').middleware(['auth', 'acl:student,server adm'])
+Route.get('/events', 'EventsController.index').middleware(['auth'])
 
 // User
 Route.post('/users', 'UsersController.store') // Rota para criação de contas
-Route.patch('/users/update/:id', 'UsersController.update').middleware([
-  'auth',
-  'acl:student,server adm,professor,parent',
-]) // Rota para atualização de dados do usuário
+Route.patch('/users/update/:id', 'UsersController.update').middleware(['auth']) // Rota para atualização de dados do usuário
 
 // Classe
 // Rota para adicionar estudante a uma turma! O estudante seleciona a turma no qual ele participa
 Route.post('/classes/:classId/students/:studentId', 'ClassesController.addStudent').middleware([
   'auth',
-  'acl:student',
 ])
 
 // Passwords
-Route.post('/forgot-password', 'PasswordsController.forgotPassword')
-Route.post('/reset-password', 'PasswordsController.resetPassword')
+Route.post('/forgot-password', 'PasswordsController.forgotPassword').as('forgotPassword')
+Route.post('/reset-password', 'PasswordsController.resetPassword').as('resetPassword')
 
 // Rotas pertecentens somente ao usuário adm
 Route.group(() => {
   // Course
-  Route.post('/course', 'CoursesController.store')
-  Route.get('/course/:id', 'CoursesController.show')
-  Route.get('/course', 'CoursesController.index')
-  Route.get('/course/:id/classes', 'CoursesController.classesByCourse')
-  Route.patch('/course/:id', 'CoursesController.update')
-  Route.delete('/course/:id', 'CoursesController.destroy')
+  // Route.group(() => {
+  //   Route.post('/create', 'CoursesController.store').as('create')
+  //   Route.get('/:page?', 'CoursesController.index')
+  //     .as('index')
+  //     .where('page', Route.matchers.number())
+  //   Route.put('/:id', 'CoursesController.update').as('update')
+  //   Route.delete('/:id', 'CoursesController.destroy').as('destroy')
+  // })
+  //   .prefix('/course')
+  //   .as('course')
 
-  // Classes
-  Route.post('/classes', 'ClassesController.store')
-  Route.patch('/classes/:id', 'ClassesController.update')
-  Route.get('/classes/:id', 'ClassesController.show')
-  Route.get('/classes', 'ClassesController.index')
+  // // Classes
+  // Route.group(() => {
+  //   Route.post('/store', 'ClassesController.store').as('store')
+  //   Route.put('/:id', 'ClassesController.update').as('update')
+  //   Route.get('/?:page', 'ClassesController.index')
+  //     .as('index')
+  //     .where('page', Route.matchers.number())
+  // })
+  //   .prefix('/classes')
+  //   .as('classes')
 
   // Events
-  Route.post('/events', 'EventsController.store')
-  //Route.post('/events/send/:id', 'EventsController.sendEventToClass')
-  Route.post('/events/send-to-class/', 'EventsController.sendEventToClass')
-  Route.post('/events/send-to-course/', 'EventsController.sendEventByCourse')
-  Route.post('/events/send-to-user/', 'EventsController.sendEventByUser')
-  Route.patch('/events/:id', 'EventsController.update')
-  Route.delete('/events/:id', 'EventsController.destroy')
-}).middleware(['auth', 'acl:server adm'])
+  Route.group(() => {
+    Route.post('/store', 'EventsController.store').as('store')
+    Route.post('/send-to-class', 'EventsController.sendEventToClass').as('send-to-class')
+    Route.post('/send-to-course', 'EventsController.sendEventByCourse').as('send-to-course')
+    Route.post('/send-to-user', 'EventsController.sendEventByUser').as('send-to-user')
+    Route.put('/:id', 'EventsController.update').as('update').as('update')
+    Route.delete('/:id', 'EventsController.destroy').as('destroy')
+  })
+    .prefix('events')
+    .as('events')
+    .middleware(['role:admin'])
+})
+  .prefix('studio')
+  .as('studio')
+  .middleware('auth')
 
+// Rota para gerenciamento de imagens
 Route.post('/upload', 'FilesController.upload')
 
-// Route.post('upload', async ({ request }) => {
-//   const image = request.file('image')
-//   if (image !== null) {
-//     const fileName = `${Date.now()}.${image.extname}`
-//     const fileStream = fs.createReadStream(image.tmpPath!)
-//     await Drive.putStream(fileName, fileStream, {
-//       contentType: image.headers['content-type'],
-//     })
-//   }
-// })
+Route.post('images', async ({ request, response }) => {
+  const image = request.file('image')
+
+  // Lê os dados do arquivo
+  const imageName = DateTime.now().toFormat('yyyyLLddHHmmss') + '.' + image!.extname
+
+  if (image) {
+    await image.move(Application.publicPath('images'), {
+      name: imageName,
+    })
+  }
+
+  return response.ok({})
+})
+
+Route.get('images/:fileName', async ({ response, params }) => {
+  const filePath = `public/images/${params.fileName}.png`
+
+  try {
+    // Gera uma URL assinada para o arquivo
+    const signedUrl = await Drive.getUrl(filePath)
+
+    // Retorna a URL assinada
+    return response.send({ url: signedUrl })
+  } catch (error) {
+    return response.status(404).send({ error: 'File not found' })
+  }
+})

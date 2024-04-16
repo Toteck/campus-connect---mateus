@@ -6,12 +6,12 @@ import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class UsersController {
-  public async store({ response, request }: HttpContextContract) {
+  public async store({ response, request, auth }: HttpContextContract) {
     const userPayload = await request.validate(CreateUserValidator)
 
     const user = await User.create(userPayload)
 
-    return response.created({ user })
+    return response.created({ user, token: auth.use('api').token })
   }
 
   public async update({ response, request }: HttpContextContract) {

@@ -5,9 +5,13 @@ import {
   ManyToMany,
   belongsTo,
   column,
+  computed,
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
+import PostType from 'App/Enums/PostType'
+import Status from 'App/Enums/Status'
+import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -17,13 +21,23 @@ export default class Event extends BaseModel {
   public title: string
 
   @column()
+  @slugify({
+    strategy: 'dbIncrement',
+    fields: ['title'],
+  })
+  public slug: string
+
+  @column()
   public description: string
 
   @column()
-  public category: 'notícia' | 'edital' | 'evento' | 'reunião'
+  public videoUrl: string | null
 
   @column()
-  public status?: 'andamento' | 'concluído' | 'suspenso'
+  public postType: PostType
+
+  @column()
+  public status: Status
 
   @column()
   public thumbnail: string | null

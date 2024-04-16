@@ -7,11 +7,14 @@ import {
   column,
   hasMany,
   manyToMany,
+  belongsTo,
+  BelongsTo,
 } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import Class from './Class'
 import Event from './Event'
 import LinkToken from './LinkToken'
+import Role from './Role'
 //import LinkToken from './LinkToken'
 
 export default class User extends BaseModel {
@@ -22,16 +25,18 @@ export default class User extends BaseModel {
   public name: string
 
   @column()
-  public register: string
-
-  @column()
   public email: string
 
   @column({ serializeAs: null })
   public password: string
 
   @column()
-  public profile: 'student' | 'parent' | 'server adm' | 'professor'
+  public roleId: number
+
+  @belongsTo(() => Role, {
+    foreignKey: 'roleId',
+  })
+  public role: BelongsTo<typeof Role>
 
   @column()
   public photo: string | null
