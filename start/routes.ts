@@ -1,5 +1,4 @@
 import Route from '@ioc:Adonis/Core/Route'
-import Drive from '@ioc:Adonis/Core/Drive'
 import { DateTime } from 'luxon'
 import Application from '@ioc:Adonis/Core/Application'
 // Session
@@ -28,6 +27,7 @@ Route.post('/reset-password', 'PasswordsController.resetPassword').as('resetPass
 // Rotas pertecentens somente ao usuário adm
 Route.group(() => {
   // Course
+
   // Route.group(() => {
   //   Route.post('/create', 'CoursesController.store').as('create')
   //   Route.get('/:page?', 'CoursesController.index')
@@ -49,6 +49,9 @@ Route.group(() => {
   // })
   //   .prefix('/classes')
   //   .as('classes')
+
+  Route.post('/assets', 'AssetsController.store').as('studio.assets.store')
+  Route.delete('/assets/:id', 'AssetsController.destroy').as('studio.assets.destroy')
 
   // Events
   Route.group(() => {
@@ -83,18 +86,4 @@ Route.post('images', async ({ request, response }) => {
   }
 
   return response.ok({})
-})
-
-Route.get('images/:fileName', async ({ response, params }) => {
-  const filePath = `public/images/${params.fileName}.png`
-
-  try {
-    // Gera uma URL assinada para o arquivo
-    const signedUrl = await Drive.getUrl(filePath)
-
-    // Retorna a URL assinada
-    return response.send({ url: signedUrl })
-  } catch (error) {
-    return response.status(404).send({ error: 'File not found' })
-  }
 })

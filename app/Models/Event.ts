@@ -12,6 +12,7 @@ import User from './User'
 import PostType from 'App/Enums/PostType'
 import Status from 'App/Enums/Status'
 import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
+import Asset from './Asset'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -54,6 +55,11 @@ export default class Event extends BaseModel {
     pivotTable: 'users_events',
   })
   public users: ManyToMany<typeof User>
+
+  @manyToMany(() => Asset, {
+    pivotTable: 'asset_events',
+  })
+  public assets: ManyToMany<typeof Asset>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
