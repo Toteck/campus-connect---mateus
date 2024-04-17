@@ -38,6 +38,15 @@ export default class AssetsController {
     }
   }
 
+  public async show({ request, response, params }: HttpContextContract) {
+    const { id } = request.params()
+    const asset = await Asset.findOrFail(id)
+    const url = await Drive.getUrl(asset.filename)
+
+    // Custom encoding
+    return response.send(url)
+  }
+
   public async destroy({ request, response, params }: HttpContextContract) {
     const asset = await Asset.findOrFail(params.id)
 

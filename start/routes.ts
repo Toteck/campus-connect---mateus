@@ -52,6 +52,7 @@ Route.group(() => {
 
   Route.post('/assets', 'AssetsController.store').as('studio.assets.store')
   Route.delete('/assets/:id', 'AssetsController.destroy').as('studio.assets.destroy')
+  Route.get('/assets/:id', 'AssetsController.show').as('studio.assets.show')
 
   // Events
   Route.group(() => {

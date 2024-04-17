@@ -1,4 +1,4 @@
-import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateEventValidator {
@@ -8,6 +8,9 @@ export default class CreateEventValidator {
     title: schema.string({ trim: true }),
     description: schema.string({ trim: true }),
     thumbnail: schema.file.optional(),
+    assetIds: schema.array
+      .optional()
+      .members(schema.number([rules.exists({ table: 'assets', column: 'id' })])),
   })
 
   public messages: CustomMessages = {
