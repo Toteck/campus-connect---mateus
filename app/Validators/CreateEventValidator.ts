@@ -8,9 +8,6 @@ export default class CreateEventValidator {
     title: schema.string({ trim: true }),
     description: schema.string({ trim: true }),
     thumbnail: schema.file.optional(),
-    assetIds: schema.array
-      .optional()
-      .members(schema.number([rules.exists({ table: 'assets', column: 'id' })])),
   })
 
   public messages: CustomMessages = {
@@ -22,3 +19,4 @@ export default class CreateEventValidator {
 }
 
 //anexo: schema.object.optional().members({ url: schema.string({}) })
+//assetIds: schema.array.optional().members(schema.number([rules.exists({ table: 'assets', column: 'id' })])),

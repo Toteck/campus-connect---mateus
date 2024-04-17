@@ -8,6 +8,9 @@ import fs from 'fs'
 export default class EventsController {
   public async store({ response, request, auth }: HttpContextContract) {
     const eventPayload1 = await request.validate(CreateEventValidator)
+    const assetIds = request.only(['assetIds'])
+
+    const assetIdsArray = [...JSON.parse(assetIds.assetIds)]
 
     const publisherId = auth.user!.id
 
@@ -32,9 +35,13 @@ export default class EventsController {
         thumbnailFileName = fileName
       }
     }
+
     const event = await Event.create({ ...eventPayload, thumbnail: thumbnailFileName })
     // Associa o evento ao autor
     await event.load('publisherUser')
+
+    if (assetIdsArray) event.related('assets').sync(assetIdsArray)
+
     return response.created({ event })
   }
 
